@@ -16,3 +16,4 @@ IF(ALBANY_STK)
   add_subdirectory(stk)
 ENDIF()
 
+add_subdirectory(dealii)

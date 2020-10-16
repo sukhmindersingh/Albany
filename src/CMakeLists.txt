@@ -674,6 +674,7 @@ include_directories (${ALBANY_PUMI_INCLUDE_DIRS}
                      ./problems
                      ./responses
                      ./disc/stk
+                     ./disc/dealii
                      ./adapt
                      ./disc
                      ./utility
@@ -790,11 +791,23 @@ if(ALBANY_CATALYST)
   include_directories(${ALBANY_CATALYST_INCLUDE_DIRS})
 endif()
 
+# dealii
+#FIND_PACKAGE(deal.II 9.3.0 REQUIRED
+    #HINTS ${deal.II_DIR} ${DEAL_II_DIR} ../ ../../ $ENV{DEAL_II_DIR})
+#IF(NOT ${deal.II_FOUND})
+#MESSAGE(FATAL_ERROR "\n"
+    #"*** Could not locate a (sufficiently recent) version of deal.II. ***\n\n"
+    #"You may want to either pass a flag -DDEAL_II_DIR=/path/to/deal.II to cmake\n"
+    #"or set an environment variable \"DEAL_II_DIR\" that contains this path."
+    #)
+#ENDIF()
+#DEAL_II_INITIALIZE_CACHED_VARIABLES()
 
 # Now build executables from this library, tailored main()s, and Trilinos
 IF (NOT ALBANY_LIBRARIES_ONLY)
 
 add_executable(Albany Main_Solve.cpp)
+
 
 SET(ALBANY_EXECUTABLES Albany)
 
@@ -816,6 +829,9 @@ IF (ALBANY_MESHDB_TOOLS)
   SET(ALBANY_EXECUTABLES ${ALBANY_EXECUTABLES} exopumiconvert)
 ENDIF()
 
+#DEAL_II_SETUP_TARGET(${ALBANY_EXECUTABLES})
+#DEAL_II_SETUP_TARGET(${ALBANY_EXECUTABLES})
+
 ENDIF (NOT ALBANY_LIBRARIES_ONLY)
 # End declaration of executables
 
@@ -834,6 +850,7 @@ set(ALL_LIBRARIES
   ${Trilinos_EXTRA_LD_FLAGS}
   ${Albany_EXTRA_LIBRARIES}
   ${CMAKE_Fortran_IMPLICIT_LINK_LIBRARIES}
+  ${DEAL_II_LIBRARIES}
   )
 
 # Add Albany internal libraries/physics sets, as enabled.
@@ -885,6 +902,8 @@ IF(ALBANY_APF)
   SET(ALBANY_LIBRARIES ${ALBANY_LIBRARIES} albanyPUMI)
 ENDIF()
 
+#SET(ALBANY_LIBRARIES ${ALBANY_LIBRARIES} albanyDealii)
+
 IF(ALBANY_CATALYST)
   SET(ALBANY_LIBRARIES ${ALBANY_LIBRARIES} albanyCatalyst)
 endif()
@@ -919,8 +938,13 @@ IF (Albany_BUILD_STATIC_EXE)
 ENDIF()
 
 FOREACH(ALB_EXEC ${ALBANY_EXECUTABLES})
+  #DEAL_II_SETUP_TARGET(${ALB_EXEC}) 
   target_link_libraries(${ALB_EXEC} ${ALBANY_LIBRARIES} ${ALL_LIBRARIES})
+  #TARGET_LINK_LIBRARIES(${ALB_EXEC} ${DEAL_II_LIBRARIES})
 ENDFOREACH()
+
+
+#DEAL_II_INVOKE_AUTOPILOT()
 
 IF (INSTALL_ALBANY)
   configure_package_config_file(AlbanyConfig.cmake.in

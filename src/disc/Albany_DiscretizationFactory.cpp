@@ -36,9 +36,13 @@
 #include "Albany_Catalyst_Decorator.hpp"
 #endif
 
+//#include "Albany_DealiiMeshStruct.hpp"
+//#include "Albany_DealiiDiscretization.hpp"
+
 #if defined(ALBANY_LCM) && defined(ALBANY_STK)
 #include "Topology_Utils.h"
 #endif // ALBANY_LCM
+
 
 Albany::DiscretizationFactory::DiscretizationFactory(
         const Teuchos::RCP<Teuchos::ParameterList>& topLevelParams,
@@ -308,7 +312,9 @@ Albany::DiscretizationFactory::createMeshStruct(Teuchos::RCP<Teuchos::ParameterL
 #endif // ALBANY_SEACAS
     } else if (method == "Gmsh") {
         return Teuchos::rcp(new Albany::GmshSTKMeshStruct(disc_params, comm));
-    }
+    } // else if (method == "Dealii") {
+        //return Teuchos::rcp(new Albany::DealiiMeshStruct(disc_params, comm));
+    //}
 #ifdef ALBANY_LANDICE
     else if (method == "Extruded") {
         Teuchos::RCP<Albany::AbstractMeshStruct> basalMesh;
@@ -478,6 +484,11 @@ Albany::DiscretizationFactory::createDiscretizationFromInternalMeshStruct(
                 break;
             }
 #endif
+            //case Albany::AbstractMeshStruct::Dealii_MS:
+            //{
+              //return Teuchos::rcp(new Albany::DealiiDiscretization(discParams, commT));
+              //break;
+            //}
         }
     }
 #if defined(ALBANY_AERAS) && defined(ALBANY_STK)

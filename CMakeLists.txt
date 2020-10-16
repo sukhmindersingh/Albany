@@ -10,6 +10,18 @@
 cmake_minimum_required(VERSION 2.8.12)
 include(CMakeDependentOption)
 
+FIND_PACKAGE(deal.II 9.3.0 REQUIRED
+    HINTS ${deal.II_DIR} ${DEAL_II_DIR} ../ ../../ $ENV{DEAL_II_DIR})
+IF(NOT ${deal.II_FOUND})
+MESSAGE(FATAL_ERROR "\n"
+    "*** Could not locate a (sufficiently recent) version of deal.II. ***\n\n"
+    "You may want to either pass a flag -DDEAL_II_DIR=/path/to/deal.II to cmake\n"
+    "or set an environment variable \"DEAL_II_DIR\" that contains this path."
+    )
+ENDIF()
+DEAL_II_INITIALIZE_CACHED_VARIABLES()
+INCLUDE_DIRECTORIES(${DEAL_II_INCLUDE_DIRS})
+
 OPTION (USE_NEW_POLICY_CMP0060 "Flag to turn on new behavior for policy CMP0060" OFF)
 IF (USE_NEW_POLICY_CMP0060)
   CMAKE_POLICY(SET CMP0060 NEW)
@@ -32,7 +44,11 @@ SET_PROPERTY(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
 IF (DEFINED ALBANY_TRILINOS_DIR)
   SET(CMAKE_PREFIX_PATH ${ALBANY_TRILINOS_DIR} ${CMAKE_PREFIX_PATH})
 ENDIF()
+
+
+
 FIND_PACKAGE(Trilinos REQUIRED)
+
 
 OPTION (ALBANY_SUPPRESS_TRILINOS_WARNINGS "Whether or not Trilinos headers should be treated as 'system' headers (hence, without issuing warnings)" OFF)
 
@@ -141,7 +157,7 @@ if (SET_COMPILERS_AUTOMATICALLY)
 #    CMAKE_FORCE_Fortran_COMPILER(${Trilinos_Fortran_COMPILER} ${Trilinos_Fortran_COMPILER_ID})
 #    SET(CMAKE_Fortran_IMPLICIT_LINK_LIBRARIES ${Trilinos_Fortran_IMPLICIT_LINK_LIBRARIES})
   else ()
-    set (CMAKE_CXX_COMPILER ${Trilinos_CXX_COMPILER})
+    #set (CMAKE_CXX_COMPILER ${Trilinos_CXX_COMPILER})
     set (CMAKE_C_COMPILER ${Trilinos_C_COMPILER})
     set (CMAKE_Fortran_COMPILER ${Trilinos_Fortran_COMPILER})
   endif ()
